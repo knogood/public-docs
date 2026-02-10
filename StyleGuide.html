@@ -1,0 +1,2136 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>Iris Software Library - Style Guide</title>
+
+    <style type="text/css">
+      hr
+        {
+          color:#FFC0CB;
+          background-color:#FFC0CB;
+          border-color:Black;
+          height:3px;
+        }
+      table
+        {
+          margin-left:36px;
+          margin-right:24px;
+          border-style:solid;
+          border-width:thin;
+          border-color:Maroon;
+          width:95%;
+        }
+      table tr td
+        {
+          padding-left:12px;
+        }
+      .indent
+        {
+          text-indent:24px;
+        }
+      .example
+        {
+          margin-left:0px;
+          margin-right:0px;
+          margin-bottom:6px;
+          border-style:solid;
+          border-width:thin;
+          border-color:Black;
+          background-color:#FAFAD2;
+        }
+      pre
+        {
+          font-size:small;
+          line-height:8px;
+          color:Navy;
+        }
+      code
+        {
+          font-size:small;
+          line-height:8px;
+          color:Navy;
+        }
+    </style>
+
+  </head>
+
+  <body>
+    <a id="Top" href="#Top"></a>
+
+    <h1 align="center">Iris Software Library - Style Guide</h1>
+    <h5 align="center">Version 1.3</h5>
+    <h5 align="center">16-Jun-2023</h5>
+
+    <h2 align="center">Introduction</h2>
+
+    <p>
+      This document describes the programming style of the Iris Software Library (ISL).
+      Following the description of each rule is a rationale for its existence; some
+      rules also provide example code (C++20), and some list exceptions. As this is a
+      guide, it does not address every issue or exception.  In those cases, the
+      programmer's best judgement or team consensus should be the guide.
+    </p>
+    <p>
+      Although some of these guidelines may seem a bit arbitrary, it is generally agreed
+      that consistent use of any style within a project makes reading, understanding,
+      maintaining, and evolving the code easier.  For all but throw-away code, those
+      are significant considerations.
+    </p>
+
+    <h3>Guidelines:</h3>
+
+    <ul>
+      <li><a href="#CharacterSet">Source Code Character Set</a></li>
+      <li><a href="#LineTermination">Line Termination</a></li>
+      <li><a href="#LineLength">Line Length</a></li>
+      <li><a href="#Indentation">Indentation</a></li>
+      <li><a href="#HeaderFiles">Header Files</a></li>
+      <li><a href="#IncludeGuards">Include Guards</a></li>
+      <li><a href="#SourceFiles">Source Files</a></li>
+      <li><a href="#IncludedFiles">Included Files</a></li>
+      <li><a href="#ForwardDeclarations">ForwardDeclarations</a></li>
+      <li><a href="#IfStatements">If Statements</a></li>
+      <li><a href="#SwitchStatements">Switch Statements</a></li>
+      <li><a href="#ForLoops">For Loops</a></li>
+      <li><a href="#InfiniteLoops">Infinite Loops</a></li>
+      <li><a href="#SingleReturn">Single Point of Return</a></li>
+      <li><a href="#ReturnValue">Return Value</a></li>
+      <li><a href="#TrailingReturnType">Trailing Return Type</a></li>
+      <li><a href="#ReturnTypeDeduction">Return Type Deduction</a></li>
+      <li><a href="#NoDiscard">The [[nodiscard]] Attribute</a></li>
+      <li><a href="#PreferAlgorithms">Prefer Algorithms Over Iteration</a></li>
+      <li><a href="#PreferIterators">Prefer Iterators Over Indexing</a></li>
+      <li><a href="#Indexing">Indexing</a></li>
+      <li><a href="#UniformInitialization">Uniform Initialization</a></li>
+      <li><a href="#TypeNames">Type Names</a></li>
+      <li><a href="#MethodNames">Method Names</a></li>
+      <li><a href="#DataMemberNames">Data and Data Member Names</a></li>
+      <li><a href="#Constructors">Constructors</a></li>
+      <li><a href="#ConstructorInvocations">Constructor Invocations</a></li>
+      <li><a href="#SpecialMemberFunctions">Special Member Functions</a></li>
+      <li><a href="#DefaultComparisons">DefaultComparisons</a>/li>
+      <li><a href="#MemberReference">Data Member Reference</a></li>
+      <li><a href="#PreferredTypes">Prefer Native Types</a></li>
+      <li><a href="#Signedness">Signed or Unsigned?</a></li>
+      <li><a href="#auto">Using &quot;auto&quot;</a></li>
+      <li><a href="#LocalVariables">Local Variables</a></li>
+      <li><a href="#const">Using &quot;const&quot;</a></li>
+      <li><a href="#Preincrement">Prefer Preincrement</a></li>
+      <li><a href="#QualifiedNames">Using Qualified Names</a></li>
+      <li><a href="#FunctionPrototypes">Function Prototypes</a></li>
+      <li><a href="#Preconditions">Preconditions, Postconditions, and Asserts</a></li>
+      <li><a href="#Documentation">Documentation</a></li>
+      <li><a href="#RegressionTests">Regression Tests</a></li>
+      <li><a href="#Minimize">Minimize</a></li>
+      <li><a href="#Assertions">Assertions</a></li>
+      <li><a href="#MagicNumbers">Magic Numbers</a></li>
+    </ul>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="CharacterSet" href="#CharacterSet"></a>
+
+    <h4 class="indent">Source Code Character Set</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          Source code shall be written using only standard printable ASCII characters
+          (hexadecimal values 0x20, space, through 0x7f, tilde) plus the line
+          termination character (see <a href="#LineTermination">Line Termination</a>).
+          No &quot;extended&quot; ASCII characters nor any other ASCII control characters
+          (including tabs) should be present in source code files.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          The C/C++ languages are specified in terms of the standard ASCII character set.
+          Tabs are discouraged because we wish to have indented code (see
+          <a href="#Top">Indentation</a>), and tabs indent differently depending upon
+          the editor and its settings.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Exception:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          Where it would aid in the explanation of an operation, comments may use UTF-8
+          encoded symbols to enable mathematical notation.
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="LineTermination" href="#LineTermination"></a>
+
+    <h4 class="indent">Line Termination</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          Source code files shall use Unix line termination (new line character,
+          hexadecimal 0x0a).
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          There are three common variations of text file line termination.  Unix systems
+          use a newline character (0x0a), Macintosh systems prior to OS X use a carriage
+          return (0x0d), and Windows systems use a carriage return/line feed pair.
+          There's no good reason to use two characters where one will do; the Unix
+          convention is adopted due to its more widespread and enduring acceptance.
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="LineLength" href="#LineLength"></a>
+
+    <h4 class="indent">Line Length</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          Source code lines shall have a maximum length of 96 characters, not counting the
+          line termination character.  Separator comment lines shall have
+          a length of 97 characters, again not counting the line termination character.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          This limit is for convenience when viewing, editing, and printing source code.
+          Longer lines often require horizontal scrolling when viewing, especially on
+          portable devices, and are sometimes truncated when printed.
+          Long lines can be split into multiple statements, or line breaks can be inserted
+          at &quot;natural&quot; breakpoints within a statement with similar expressions
+          aligned in multiple lines.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Examples:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          <table class="example" width="98%">
+            <tr>
+              <td colspan="2">Instead of:
+              </td>
+            </tr>
+            <tr>
+              <td width="12px"></td>
+              <td>
+<pre>const auto distance = std::sqrt(std::pow(x1-x0,2)+std::pow(y1-y0,2)+std::pow(z1-z0,2));</pre>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">Use this:
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>
+<pre>const auto distance = std::sqrt(std::pow(x1-x0,2)+<br />
+                                std::pow(y1-y0,2)+<br />
+                                std::pow(z1-z0,2));</pre>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                Or maybe even this:
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>
+<pre>const auto dx = x1-x0;<br />
+const auto dy = y1-y0;<br />
+const auto dz = z1-z0;<br />
+const auto distance = std::sqrt(sqr(dx)+sqr(dy)+sqr(dz));</pre>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="Indentation" href="#Indentation"></a>
+
+    <h4 class="indent">Indentation</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          The nested structure of the source code shall be indicated by indenting.
+          The outermost code shall be indented two spaces; each additional level of nesting
+          shall add two spaces of indentation.  Such indenting is context-dependent.
+          For example, an inline function definition in a header file would be indented
+          differently than a non-inline definition of the same function in a source file
+          due to the presence of an <a href="#IncludeGuards">include guard</a> in the
+          header file.  Likewise the body of a member function will be indented differently
+          than the body of a constructor if the constructor has base or member initializers.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          This greatly improves the readability of source code by making its structure
+          readily apparent.
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="HeaderFiles" href="#HeaderFiles"></a>
+
+    <h4 class="indent">Header Files</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          Each functional module should have its own header (.hpp) file; templated functionality
+          might, and modules of header-only libraries must, have no corresponding implementation
+          (.cpp) file.  The top of the header file should specify the public interface to the
+          module, exposing as little implementation detail as possible.  Header files must
+          contain the definitions of templated classes and functions; they may also, or in the
+          case of header-only modules, must contain inline definitions of functions.  Template
+          function definitions and inline function definitions should not be part of the class
+          definition or function declaration, but rather should be separate definitions later
+          in the file, preferably in the same order as their initial appearance in the file.
+          There are a few things which header files should never contain:
+            <ul>
+                <li>non-inline data definitions</li>
+                <li>non-inline function definitions</li>
+                <li>global namespace using directives</li>
+                <li>unnamed namespaces</li>
+            </ul>
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          The purpose of header files is to specify the public interface to a module.
+          Inclusion of template function definitions and inline definitions in header files
+          is an unfortunate requirement due to the language design.  Header-only library
+          design is a useful evolution of the language which greatly simplifies
+          distribution and use of libraries.  An inline directive as part of a function
+          definition is only a suggestion to the compiler; large functions defined inline
+          are unlikely to actually be inlined by most compilers, but specifying inline
+          avoids potential violations of the one definition rule.  Combining definitions
+          and declarations of functions mixes the public interface with the private
+          implementation and is best avoided, even in the case of simple get/set
+          (accessor/mutator) functions.  Placing function definitions in the same order
+          as their initial appearance in the file simplifies navigation of the code.
+          Including non-inline data or function definitions in a header file will result
+          in a violation of the one definition rule in any program which has more than one
+          translation unit including that header file.  Having a global namespace using
+          directive in a header file effectively nullifies the namespace, possibly
+          reintroducing name conflicts which the namespace was created to avoid.  Unnamed
+          namespace are provided to hide details of implementation files; header file
+          contents cannot be hidden.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Exception:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          The &quot;inline&quot; definition of a no-op virtual base class destructor
+          enables an optimization in the destructor chain for derived class objects.
+          Note that virtual functions cannot generally be inlined.
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>
+          <table class="example" width="98%">
+            <tr>
+              <td width="12px"></td>
+              <td>
+<pre>virtual ~base_class() { ; }  ///< @brief  inline virtual destructor</pre>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="IncludeGuards" href="#IncludeGuards"></a>
+
+    <h4 class="indent">Include Guards</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          Mostly for efficiency reasons, it is desirable to include a header file only once
+          within a translation unit.  Because of module interdependencies, it's almost
+          impossible to ensure this by design, so the convention is to provide an include
+          guard for each header file.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          Generally, multiple inclusion should have no adverse effects apart from slower
+          compilation (see <a href="#HeaderFiles">Header Files</a>).  Nevertheless, it is
+          customary to provide include guards.  There are alternative solutions including
+          external include guards and pragmas, but the former is fragile because it uses
+          an implementation details of the header file outside of the header and the latter
+          is not portable.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Example:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          <table class="example" width="98%">
+            <tr>
+              <td width="12px"></td>
+              <td>
+<pre>#ifndef   MY_HEADER_INCLUDED<br />
+  #define MY_HEADER_INCLUDED<br />
+    :<br />
+#endif</pre>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="SourceFiles" href="#SourceFiles"></a>
+
+    <h4 class="indent">Source Files</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          Source files contain the implementations of functions declared in the corresponding
+          header file.  They may also contain private data and functions supporting those
+          public functions.  Traditional C-style programming would default the private data
+          and functions into the global namespace (albeit, undeclared) or would explicitly
+          limit them to file scope by declaring them static.  The preference in C++ is to
+          place them into an unnamed namespace.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          There's essentially no difference between placing data and functions in an
+          unnamed namespace and limiting them to file scope by declaring them static.
+          By convention, the unnamed namespace is preferred in C++ code.  Leaving internal
+          details in the default global scope may lead to name conflicts or violations
+          of the one definition rule.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Example:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          <table class="example" width="98%">
+            <tr>
+              <td width="12px"></td>
+              <td>
+<pre>namespace<br />
+  {<br />
+    auto mySupportingData = 0;  ///< @brief  supporting data; not thread-safe<br />
+    void MySupportFunction();<br />
+  }</pre>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="IncludedFiles" href="#IncludedFiles"></a>
+
+    <h4 class="indent">Included Files</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          Most header and source files require details from other modules.  Such details are
+          provided in the module header files.  Each header and source file should contain
+          all and only the header files necessary for its compilation.  It's acceptable for
+          an implementation file to not include a module header if its own header file
+          already includes that module header.  It's not acceptable for a file to not include
+          a module header because it knows that some other module header which it does include
+          also includes that header.  Consider analyzing source code files with the
+          &quot;include-what-you-use (IWYU)&quot;, or similiar, tool.  Header files should be
+          included in the following high to low
+          order:
+            <ol><li>This module's header (implementation files only)</li>
+                <li>Application headers</li>
+                <li>User library headers</li>
+                <li>Support library headers</li>
+                <li>C++ library headers</li>
+                <li>C++ versions of C library headers</li>
+                <li>C library headers</li>
+                <li>System headers</li></ol>
+          Within each group, it helps to include the headers in some standard order, e.g.,
+          alphabetical.  Headers in groups 3 and above should use system header notation
+          (angle brackets); headers in groups 1 and 2 may use application header notation
+          (quotation marks).  Do not use ascending include paths
+          (<code>#include "../Module.hpp"</code>).
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          Each source (and header) file should compile independently without error.
+          Relying upon dependency chains is non-portable and will fail if code changes
+          break the chain.  Including files in the specified order increases the chances
+          of finding unintentional reliance on such dependency chains.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Example:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          <table class="example" width="98%">
+            <tr>
+              <td width="12px"></td>
+              <td>
+<pre>#include &quot;ThisModule.hpp&quot;<br /><br />
+#include &quot;MyApplicationSupport.hpp&quot;<br /><br />
+#include &lt;ISL/Image/BayerImage.hpp&gt;<br />
+#include &lt;ISL/Image/GrayscaleImage.hpp&gt;<br />
+#include &lt;ISL/Support/TCP_IP.hpp&gt;<br /><br />
+#include &lt;boost/algorithm/string.hpp&gt;<br />
+#include &lt;boost/thread.hpp&gt;<br /><br />
+#include &lt;iostream&gt;<br />
+#include &lt;set&gt;<br />
+#include &lt;vector&gt;<br /><br />
+#include &lt;cassert&gt;<br /><br />
+#include &lt;stdint.h&gt;  // cstdint would generally be a better choice<br /><br />
+#include &lt;winsock.h&gt;</pre>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="ForwardDeclarations" href="#ForwardDeclarations"></a>
+
+    <h4 class="indent">Forward Declarations</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          Sometimes header files need to know the identity of a type without knowing any of
+          its details.  For example, a function prototype may indicate that the function
+          has a parameter that is a reference to an object.  The prototype, and thus the
+          header, does not not need to know any of the details of the object.  In this case,
+          a forward declaration of the object may suffice in lieu of including the object's
+          module header.  The source file implementing the prototyped function will, of course,
+          need to include the header to do anything useful with the parameter.  Forward
+          declarations can also be used to break circular dependencies.  Do not forward
+          declare STL types.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          Using forward declarations wherever possible minimizes module dependencies and
+          reduces compilation time.  Most STL types are templates, many with
+          &quot;hidden&quot; template parameters, some implementation-defined; matching
+          a forward declaration to such templates is difficult, and possibly not portable.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Example:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          <table class="example" width="98%">
+            <tr>
+              <td width="12px"></td>
+              <td>
+<pre>class SomeObject;  // forward declaration<br /><br />
+void MyFunction(const SomeObject& obj)</pre>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="IfStatements" href="#IfStatements"></a>
+
+    <h4 class="indent">If Statements</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          If statements and else clauses should always be bracketed as compound statements.
+          Beginning with C++17, data declarations can be included in if statements; this
+          can be used to restrict the scope of the data.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          Bracketing if statements in this way makes the structure of the code very clear
+          and facilitates editing in an error-free way.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Example:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          <table class="example" width="98%">
+            <tr>
+              <td width="12px"></td>
+              <td>
+<pre>if (condition1)<br />
+  {<br />
+    :<br />
+  }<br />
+else if (condition2)<br />
+  {<br />
+    :<br />
+  }<br />
+else<br />
+  {<br />
+    :<br />
+  }</pre>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="SwitchStatements" href="#SwitchStatements"></a>
+
+    <h4 class="indent">Switch Statements</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          Switch statements are compound statements and each case should also be bracketed
+          as a compound statement.  End of case breaks should be outside of the brackets.
+          If a break is intentionally omitted, it should be marked with a
+          <code>[[fallthrough]]</code> attribute.  If a default case is provided, it should
+          be last and should be bracketed in the same way as a normal case.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          Formatting switch statements in this way makes the structure and intent of the
+          code clear.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Example:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          <table class="example" width="98%">
+            <tr>
+              <td width="12px"></td>
+              <td>
+<pre>switch (value)<br />
+  {<br />
+    case (1):<br />
+      {<br />
+        :<br />
+      }<br />
+    break;<br /><br />
+    case (2):<br />
+      {<br />
+        :<br />
+      }<br />
+    [[fallthrough]];<br /><br />
+    default:<br />
+      {<br />
+        :<br />
+      }<br />
+  }</pre>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="ForLoops" href="#ForLoops"></a>
+
+    <h4 class="indent">For Loops</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          For loops should always be formatted as compound statements.  Whenever possible,
+          make the iteration variable local to the loop.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          Formatting loops in this way makes the structure of the code clear.  Making the
+          iteration variable local to the loop conforms to the (scope) minimization principle.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Example:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          <table class="example" width="98%">
+            <tr>
+              <td width="12px"></td>
+              <td>
+<pre>for (auto n = 0; n < N; ++n)<br />
+  {<br />
+    :<br />
+  }</pre>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="InfiniteLoops" href="#InfiniteLoops"></a>
+
+    <h4 class="indent">Infinite Loops</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          Infinite loops should use the while (true) form.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          This form makes the infinite intent explicit.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Example:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          <table class="example" width="98%">
+            <tr>
+              <td width="12px"></td>
+              <td>
+<pre>while (true)<br />
+  {<br />
+    :<br />
+  }</pre>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="SingleReturn" href="#SingleReturn"></a>
+
+    <h4 class="indent">Single Point of Return</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          There should generally be a single point of return from a function, at the end of
+          the function.  In complex functions which would otherwise have several return
+          points, this can be accomplished using a one-pass loop, as shown below.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          When clean-up is required before a return, having multiple return points often
+          results in duplicate or omitted clean-up code.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Example:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          <table class="example" width="98%">
+            <tr>
+              <td width="12px"></td>
+              <td>
+<pre>int MyFunction()<br />
+  {<br />
+    auto result = EXIT_FAILURE;<br />
+    <br />
+    do<br />
+      {<br />
+         :<br />
+        if (errorCondition1)<br />
+          {<br />
+            break;<br />
+          }<br />
+         :<br />
+        if (errorCondition2)<br />
+          {<br />
+            break;<br />
+          }<br />
+         :<br />
+        result = EXIT_SUCCESS;<br />
+      }<br />
+    while (false);<br />
+    <br />
+    return result;<br />
+  }</pre>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="ReturnValue" href="#ReturnValue"></a>
+
+    <h4 class="indent">Return Value</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          The expression for the return value from a non-void function should generally be
+          an unenclosed expression.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          Bracketed and parenthesized return expressions have some surprising corner cases
+          which are best avoided.
+        </td>
+      <tr><td colspan="2"><b>Examples:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          <table class="example" width="98%">
+            <tr>
+              <td width="12px"></td>
+              <td>
+<pre>int MyFunction1()<br />
+  {<br />
+    auto result = EXIT_SUCCESS<br />
+     :<br />
+    return result;<br />
+  }<br /><br />
+int MyFunction2()<br />
+  {<br />
+     :<br />
+    return MyFunction1();<br />
+  }</pre>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Exception:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          It is acceptable to return the result of a constructor call as a bracketed expression.
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="TrailingReturnType" href="#TrailingReturnType"></a>
+
+    <h4 class="indent">Trailing Return Type</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          C++11 introduced an alternate syntax for function declarations and definitions,
+          specifying the function return type after the function arguments.  In many cases
+          where the return type is not a native type, this notation can be much more concise
+          because the namespaces of the function and its arguments are now available for name
+          lookup.  Also, this notation, or <a href="#ReturnTypeDeduction">return type
+          deduction</a>, must be used with lambdas.  Used judiciously, this can produce
+          clearer code, but:
+          <pre>auto fun() -> void;</pre>
+          is just weird.  See also <a href="#ReturnTypeDeduction">Return Type Deduction</a>.
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="ReturnTypeDeduction" href="#ReturnTypeDeduction"></a>
+
+    <h4 class="indent">Return Type Deduction</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          C++17 allows functions to defer determination of their return type to the
+          implementation using the &quot;auto&quot; with no trailing return type.
+          Unfortunately, this makes the function unusable until its definition has been
+          seen.  It also does not readily allow return by reference.  This capability
+          should be reserved for lambdas and for template meta-programming, where the
+          declaration is generally also the definition.  Never use return type deduction
+          for a function not defined in the file in which it is declared.
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="NoDiscard" href="#NoDiscard"></a>
+
+    <h4 class="indent">The [[nodiscard]] Attribute</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          C++17 introduces the &quot;nodiscard&quot; attribute to indicate that a function
+          result should not be ignored.  It certainly seems like this should be the default,
+          and adding this to every non-void function adds considerable clutter to the code.
+          In the general case, it seems a cost/benefit analysis favors <em>not</em> using
+          this attribute.
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="PreferAlgorithms" href="#PreferAlgorithms"></a>
+
+    <h4 class="indent">Prefer Algorithms Over Iteration</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          When there's an STL (or other) algorithm that does the job, use it.  With the
+          the introduction of lambda expressions, the excuse of not having the appropriate
+          predicate for using an algorithm has been eliminated.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          Obviously, under the hood, algorithms still use iteration.  But for a variety of
+          reasons, they can often iterate more efficiently than user code.  Also, using
+          algorithms results in less code that better expresses the programmer's intent.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Examples:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          <table class="example" width="98%">
+            <tr>
+              <td colspan="2">Instead of:
+              </td>
+            </tr>
+            <tr>
+              <td width="12px"></td>
+              <td>
+<pre>auto sum = 0;<br />
+for (auto iter = myVector.cbegin(); iter != myVector.cend(); ++iter)<br />
+  {<br />
+    sum += *iter;<br />
+  }</pre>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">Or even:
+              </td>
+            </tr>
+            <tr>
+              <td width="12px"></td>
+              <td>
+<pre>auto sum = 0;<br />
+for (auto value : myVector)<br />
+  {<br />
+    sum += value;<br />
+  }</pre>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">Use:
+              </td>
+              <td>
+            </tr>
+            <tr>
+              <td width="12px"></td>
+              <td>
+<pre>const auto sum = std::accumulate(myVector.cbegin(),myVector.cend(),0);<br />
+</pre>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="PreferIterators" href="#PreferIterators"></a>
+
+    <h4 class="indent">Prefer Iterators Over Indexing</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          Prefer referencing sequential elements of containers using iterators rather than
+          indices.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          Accessing elements using iterators is often more efficient than indexing
+          the containers.
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="Indexing" href="#Indexing"></a>
+
+    <h4 class="indent">Indexing with std::array and std::vector</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          When indexing to access elements of a std::array or std::vector, prefer the at()
+          accessor function if there's any possibility of the index being out-of-range.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          The at() functions will throw a std::out-of-range exception if the index is invalid;
+          the subscripting operators generally do not.
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="UniformInitialization" href="#UniformInitialization"></a>
+
+    <h4 class="indent">Uniform Initialization</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          C++11 introduced uniform initialization.  This is an attempt to unify the many
+          ways in which data can be initialized.  Unfortunately, this seems to often
+          produce awkward syntax.  Uniform initialization does add some type safety to
+          the initialization, so there may be situations where its use is warranted.
+          For example, uniform initialization works quite well with aggregates.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Examples:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          <table class="example" width="98%">
+            <tr>
+              <td colspan="2">Prefer:
+              </td>
+            </tr>
+            <tr>
+              <td width="12px"></td>
+              <td>
+                  <pre>
+const auto j = 0;      // initialized built-in type<br />
+const auto x1 = X();   // default constructor<br />
+const auto x2 = X(2);  // parameterized constructor<br />
+const auto x3 = x2;    // copy constructor<br />
+<br />
+const auto a = std::array { 1, 2, 3 };  // aggregate initialization<br />
+</pre>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">Over:
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>
+                  <pre>
+int i;                 // uninitialized built-in type  - don't do this<br />
+const auto j {0};      // initialized build-in type<br />
+const auto x1 = X{};   // default constructor<br />
+const auto x2 = X{2};  // parameterized constructor<br />
+const auto x3 {x2};    // copy constructor<br />
+</pre>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="TypeNames" href="#TypeNames"></a>
+
+    <h4 class="indent">Type Names</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          Type names are generally nouns and use upper camel case, e.g.,&nbsp;
+          <code>MyObject</code>.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          This is the chosen convention for the ISL.
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="MethodNames" href="#MethodNames"></a>
+
+    <h4 class="indent">Method Names</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          Methods are often verbs and also use upper camel case, e.g.,&nbsp;
+          <code>CorrectCase()</code>.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          This is the chosen convention for the ISL.
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="DataMemberNames" href="#DataMemberNames"></a>
+
+    <h4 class="indent">Data and Data Member Names</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          Data and data members are nouns and use lower camel case, e.g.,&nbsp;
+          <code>someData</code>.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          This is the chosen convention for the ISL.
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="Constructors" href="#Constructors"></a>
+
+    <h4 class="indent">Constructors</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          Constructors should prefer member initialization (using initializer lists) over
+          assignment of values in the constructor body.  They should also use delegate
+          constructors wherever that makes sense.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          Member initialization is more efficient than assignment in the body, and delegate
+          constructors avoid duplicate code.
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="ConstructorInvocations" href="#ConstructorInvocations"></a>
+
+    <h4 class="indent">Constructor Invocations</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          Use &quot;auto&quot; initialization when invoking a constructor.
+          Use copy initialization when constructing an object from the value of an expression.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          Explicit constructor invocation looks like exactly what it is: a function call.
+          Auto copy initialization from an expression, especially from a function call
+          expression, seems quite natural.
+        </td>
+      <tr>
+      <tr><td colspan="2"><b>Examples:</b></td></tr>
+        <td></td>
+        <td>
+          <table class="example" width="98%">
+            <tr>
+              <td width="12px"></td>
+              <td>
+<pre>const auto a1 = A();             // direct initialization using default constructor<br />
+const auto an = A(1,2,3);        // direct initialization using non-default constructor<br />
+const auto a3 = CreateA(4,5,6);  // copy initialization from an expression<br />
+</pre>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Exception:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          Sometimes explicit declaration of the type, rather than auto, in copy initialization
+          statements clarifies subsequent use of the constructed variable.
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="SpecialMemberFunctions" href="#SpecialMemberFunctions"></a>
+
+    <h4 class="indent">Special Member Functions</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          The special member functions are the default constructor, the destructor, the
+          copy and move constructors, and the copy and move assignment operators.  Unless
+          care is taken, potentially incorrect default implementations of these may be
+          generated.  To make the programmer intent explicit, if any of these except the
+          default constructor are defined for a class, they should all be declared;
+          unwanted definitions can be declared <kbd>=&nbsp;delete</kbd>.  Although it
+          appears similar, <kbd>=&nbsp;default</kbd> is actually an implementation detail;
+          as such, it should not appear in the class interface definition.  It can,
+          however, be used in an explicit function definition.  Move constructors and
+          assignment operators, if not declared <kbd>=&nbsp;delete</kbd>, should generally
+          be <kbd>noexcept</kbd>.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          This makes the programmer intent explicit and indicates that potential issues
+          were considered and, presumably, avoided.
+        </td>
+      <tr>
+      <tr><td colspan="2"><b>Example:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          <table class="example" width="98%">
+            <tr>
+              <td width="12px"></td>
+              <td>
+<pre>///  @brief  Special Member Function Example<br />
+class Example<br />
+  {<br />
+    public:<br />
+      Example();<br />
+      ~Example();<br />
+<br />
+      Example(const Example&  src)<br />
+      Example(      Example&& src) noexcept;<br />
+<br />
+      Example& operator = (const Example&  rhs);<br />
+      Example& operator = (      Example&& rhs) noexcept;<br />
+  };<br />
+<br />
+inline Example& Example(const Example& src) = default;</pre>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="DefaultComparisons" href="#DefaultComparisons"></a>
+
+    <h4 class="indent">Default Comparisons</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          C++20 introduced the ability to define default comparison operators.  Although
+          seven operators are candidates, only one of two should ever be defaulted:
+          <=> and ==.  If the three-way (spaceship) operator is defaulted, the compiler
+          will generate the equality, the inequality, and the four relational operators.
+          Likewise, if the equality operator is defaulted, the compiler will generate the
+          inequality operator.  If any such generated operator is inappropriate, then no
+          operators should be defaulted.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          This approach makes the programmer intent clear with much less code.
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="MemberReference" href="#MemberReference"></a>
+
+    <h4 class="indent">Data Member Reference</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          Data members and object methods should by qualified using <code>this-&gt;</code>.
+          Class data and methods should be qualified using <code>Fully::Qualified::ClassName::</code>.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          This makes the distinction between member data and local variables very
+          apparent in the code.  In general the more qualifying context given to a name,
+          the easier it is for a reader to understand the code.
+        </td>
+      <tr><td colspan="2"><b>Examples:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          <table class="example" width="98%">
+            <tr>
+              <td width="12px"></td>
+              <td>
+<pre>MyClass::lastValue = this->value;<br />
+this->value = newValue;<br />
+this->TestNewValue();</pre>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="PreferredTypes" href="#PreferredTypes"></a>
+
+    <h4 class="indent">Prefer Native Types</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          Use the C/C++ names for integer and floating point types.  For integers, the
+          size-specific types from <code>cstdint</code> can be used, especially when the
+          data is part of an aggregate that will be streamed for persistence and portability.
+          For full portability, the endian issue must also be addressed.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          Many packages introduce their own names for integer and/or floating point types
+          and you see things like <code>MyInt value = 42;</code>, and it's difficult to
+          determine exactly what a <code>MyInt</code> is.  Is it 32 bits?  Is it signed?
+          These are things a programmer really should know when using <code>MyInt</code>'s.
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="Signedness" href="#Signedness"></a>
+
+    <h4 class="indent">Signed or Unsigned?</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          Use unsigned integers only when performing bit manipulations.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          This is a change from previous revisions of this guide.  The consensus of the
+          C++ expert community is that unsigned integers do not do what most people expect
+          them to; recent experience confirms this.  Mixing signed and unsigned values in
+          expressions is strongly discouraged.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Exception:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          Image pixel values normally range from zero (black) to the maximum unsigned value
+          of the data type (white).  For example, 8-bit pixels range from 0 to 255, not
+          from -128 to 127.
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="auto" href="#auto"></a>
+
+    <h4 class="indent">Using &quot;auto&quot;</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          Declarations using auto are a convenient programming shortcut, but they do not
+          replace the programmer's need to know the actual type of the expression and
+          declared variable.  For short scope local variables, prefer the AAA (Almost
+          Always Auto) idiom.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          For short scope local variables, the benefits of auto are sufficient to counter
+          the drawback of not having the declared type explicitly stated in the code.
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="LocalVariables" href="#LocalVariables"></a>
+
+    <h4 class="indent">Local Variables</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          Declarations of local variables should declare a single variable and should always
+          provide an initial value.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          Waiting to declare a variable until you can calculate its value provides two
+          benefits: variables tend to migrate to the smallest possible scope, and you
+          can often declare the variable const.  Declaring multiple variables in a single
+          declaration makes the code more difficult to read and often results in
+          uninitialized variables.
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="const" href="#const"></a>
+
+    <h4 class="indent">Using &quot;const&quot;</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          Writing const-correct code is one of the more difficult aspects of C++ programming,
+          but when achieved has the potential for significant code optimizations.  Local
+          variables should be declared const whenever possible.  Object data in immutable
+          objects should be declared const.  Member functions should be declared const if
+          they don't modify the user view of the object; internal data that may be modified
+          by such functions should be declared mutable.  Input parameters to functions should
+          be declared const in the prototype if passed by reference or pointer, and const in
+          the implementation (only) if passed by value.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          This is just giving the compiler as much information as you can to enable it to
+          optimize the generated code.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Examples:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          <table class="example" width="98%">
+            <tr>
+              <td width="12px"></td>
+              <td>
+<pre>const auto myValue = 7;<br />
+const auto* const myValuePtr = &myValue;  // the pointer and the value are both const<br /><br />
+void fun(      int  val,<br />
+         const int& ref,<br />
+         const int* ptr);<br /><br />
+void fun(const int        val,  // note the const not present in the prototype<br />
+         const int&       ref,<br />
+         const int* const ptr)  // the pointer and the value are both const<br />
+  {<br />
+    :<br />
+  }</pre>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="Preincrement" href="#Preincrement"></a>
+
+    <h4 class="indent">Prefer Preincrement</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          Prefer preincrement over postincrement for counters and iterators.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          With native data types, there's essentially no performance difference between
+          preincrement and postincrement, but with library and user defined types there
+          often is.  That's because the postincrement must make a temporary copy of the
+          value before modifying it; the temporary is the expression result.
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="QualifiedNames" href="#QualifiedNames"></a>
+
+    <h4 class="indent">Using Qualified Names</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          In large software consisting of many modules, it can be very difficult to find
+          the declaration, definition, and uses of a variable or function with an unqualified
+          name because the same names are often used in different contexts.  By qualifying
+          names with their containing classes or namespaces, this problem can be reduced.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          This suggestion is a corollary of using <code>this-></code> to qualify member
+          data and functions.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Example:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          <table class="example" width="98%">
+            <tr>
+              <td colspan="2">Instead of:
+              </td>
+            </tr>
+            <tr>
+              <td width="12px"></td>
+              <td>
+<pre>if (starts_with(myString,prefix))<br />
+  {<br />
+    :<br />
+  }<br />
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">Use this:
+              </td>
+            </tr>
+            <tr>
+              <td width="12px"></td>
+              <td>
+<pre>if (boost::starts_with(myString,prefix))  // with C++20 or later, use myString.starts_with(prefix)<br />
+  {<br />
+    :<br />
+  }</pre>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="FunctionPrototypes" href="#FunctionPrototypes"></a>
+
+    <h4 class="indent">Function Prototypes</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          Function prototyes should state the complete type and name of each function
+          parameter, excluding top level const.  The names should match those used in
+          the function definition which should add the top level const where appropriate.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          Const qualification of parameters passed by value does not change the signature
+          of the function and is really an implementation detail which need not, should not,
+          be shared with users of the function.  Using different names in the prototype
+          and definition confuses some documentation generators.  Although prototype
+          parameters can be unnamed, providing names can greatly assist users of the
+          function.  All parameters should be named; possibly unused parameters
+          should use a <code>[[maybe_unused]]</code> attribute or, more commonly, a
+          <code>(void)x;</code> statement.
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="Preconditions" href="#Preconditions"></a>
+
+    <h4 class="indent">Preconditions, Postconditions, and Asserts</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          Use exceptions to test public function preconditions and asserts for their
+          postconditions.  Non-public functions can use asserts for both.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          Since asserts are usually compiled-away in release code, using them to check
+          preconditions for public functions leaves those interfaces unprotected against
+          misuse in release code.  Postconditions, however, are used to check that
+          the function did what it's supposed to do; asserts are fine for that.
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="Documentation" href="#Documentation"></a>
+
+    <h4 class="indent">Documentation</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          The ISL uses doxygen to generate its documentation.  The following elements
+          must be documented:
+            <ul><li>header and source files</li>
+                <li>namespaces</li>
+                <li>structs and classes, including those in unnamed namespaces</li>
+                <li>data elements, including those in unnamed namespaces</li>
+                <li>functions, including those in unnamed namespaces</li>
+            </ul>
+          In addition, the ISL script for doxygen adds an algorithm keyword to allow
+          description of implemented algorithms where the importance or complexity of
+          an algorithm warrants it.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          API documentation is necessary but not sufficient for usage of a library.
+          Algorithm documentation helps understanding but not navigation.  Every
+          effort should be made to write documentation that clearly explains what the
+          library code does and how it does it.  Additional information about how a
+          module fits into the library framework is also useful.  Automatically
+          generated indices to aid in navigation of the documentation are also
+          essential.  Documentation generation warnings should be treated the same
+          as compiler warnings, i.e., they should be resolved wherever possible.
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="RegressionTests" href="#RegressionTests"></a>
+
+    <h4 class="indent">Regression Tests</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          Each library module should be accompanied by a set of regression tests.  The tests
+          should verify the correctness of the implementation of every major functionality of
+          the module.  Where relevant, performance tests should also be provided.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          The ISL project files are written around the test framework.  By following a few
+          simple practices and by adding a module to a list, the regression tests for a new
+          module will automatically be added to the test suite.  Regression tests
+          should be run, and should produce no errors, before code is checked in to the
+          source code repository.  Properly configured, the generated documentation provides
+          a link to the results of the most recent regression test run.
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="Minimize" href="#Minimize"></a>
+
+    <h4 class="indent">Minimize</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          Programming in general, and in the ISL in particular, should be an exercise in
+          minimization:
+            <ul><li>write as little code as possible; if library code exists to solve a
+                    problem, use it.  This is especially true of the C++ and boost libraries,
+                    which often provide ways to customize the behavior of the library
+                    code</li>
+                <li>don't write do-it-all classes, where you try to anticipate every way a
+                    programmer might want to use your code.  Write the minimal set of
+                    functionality when the class is created, and let the functionality
+                    grow and evolve (and get pruned) as needed.</li>
+                <li>write objects which have as little state as possible; failing to maintain
+                    a consistent state for objects is a recurring source of errors.  State
+                    is also a frequent source of multi-threading errors.  The less state
+                    objects have, the fewer such problems.</li>
+                <li>don't introduce a variable until it's needed and you have the means
+                    of initializing it with a meaningful value.  The days of having to
+                    declare all the variables used in a function at the top of the
+                    function are thankfully long gone.</li></ul>
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="Assertions" href="#Assertions"></a>
+
+    <h4 class="indent">Assertions</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          Use assertions to check your coding logic; do not use assertions to verify inputs.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          Assertions should be use to check program logic.  Exceptions should be used if
+          invalid inputs are received.  Remember, assertions are generally compiled out in
+          release code.
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+<!---------------------------------------------------------------------------------------------->
+<!---------------------------------------------------------------------------------------------->
+
+    <hr />
+
+    <a id="MagicNumbers" href="#MagicNumbers"></a>
+
+    <h4 class="indent">Magic Numbers</h4>
+
+    <table>
+      <tr><td colspan="2"><b>Guideline:</b></td></tr>
+      <tr>
+        <td width="6px"></td>
+        <td>
+          Avoid the use of constants, aka, &quot;magic numbers&quot; in source code.  Use
+          configuration files to extract such values out of the code.
+        </td>
+      </tr>
+      <tr><td colspan="2"><b>Rationale:</b></td></tr>
+      <tr>
+        <td></td>
+        <td>
+          Building constants into source code limits the configurability of the software.
+          Any change to such values requires recompilation.  If constants are specified in
+          configuration files, modifications can be made via simple text edits.
+        </td>
+      </tr>
+    </table>
+
+    <p class="indent"><a href="#Top">Back to Top</a></p>
+
+  </body>
+
+</html>
