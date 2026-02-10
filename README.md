@@ -14,4 +14,4 @@ A few salient features:
  * the convolution kernel classes provide two-level iteration
      - the first level iterates the kernel position over the image
      - the second level iterates over the image pixels at the current kernel position
-     - kernel geometry is arbitrary and need not be discontiguous
+     - kernel geometry is arbitrary and need not be contiguous
