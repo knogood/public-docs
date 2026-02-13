@@ -66,7 +66,7 @@
  *  the copy constructors can create copies which share the image buffer of the source,
  *  even if the copy is of only part of the source image.
  *
- *  The class provides iterator and const_iterator classes for acccessing from the first
+ *  The class provides iterator and const_iterator classes for accessing from the first
  *  to the last pixels of an image.  To iterate over a rectangular region of interest,
  *  use a copy constructor to create an image of just that region, sharing the image
  *  buffer if appropriate, and iterate over the pixels of the copy.
