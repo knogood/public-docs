@@ -5,9 +5,6 @@
  *          image buffer.
  *
  *  A class template for images with the pixel <em>values</em> stored in the image buffer.
- *
- *  Copyright &copy; 2011-2025  -  Beckman Coulter, Inc.  -  All rights reserved
- *  <br /> Danaher Data Classification Policy  -  Restricted Content
  */
 
   #ifndef   ISL_IMAGE_DIRECT_IMAGE_HPP_INCLUDED
